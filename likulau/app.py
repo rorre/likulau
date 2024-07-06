@@ -9,6 +9,7 @@ from starlette.staticfiles import StaticFiles
 
 from likulau.env import env
 from likulau.errors import discover_error_handlers
+from likulau.providers import setup_providers
 from likulau.routes import discover_pages
 
 logger = logging.getLogger("likulau.app")
@@ -20,6 +21,8 @@ def create_app():
 
     logger.info("Discovering error handlers")
     exception_handlers = discover_error_handlers()
+
+    setup_providers()
 
     lifespan = None
     if Path("src/app.py").exists():

@@ -13,6 +13,7 @@ from starlette.responses import HTMLResponse, Response
 from starlette.routing import Route
 
 from likulau.hooks import RequestContext
+from likulau.providers import provide_all
 from likulau.types import LayoutFunction, PageFunction, SSRFunction, StaticPathsFunction
 from likulau.utils import run_async
 
@@ -100,10 +101,11 @@ def create_route(route: LikulauRoute):
             props = await run_async(route.ssr_props_func, request)
 
         with RequestContext.provide(request):
-            if len(inspect.signature(route.page_func).parameters) == 1:
-                response = await run_async(route.page_func, props)  # type: ignore
-            else:
-                response = await run_async(route.page_func)  # type: ignore
+            async with provide_all():
+                if len(inspect.signature(route.page_func).parameters) == 1:
+                    response = await run_async(route.page_func, props)  # type: ignore
+                else:
+                    response = await run_async(route.page_func)  # type: ignore
 
         if isinstance(response, liku.HTMLElement):
             if route.layout_func:
