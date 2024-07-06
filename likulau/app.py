@@ -42,4 +42,7 @@ def create_app():
         custom_app = importlib.import_module("src.app")
         app = custom_app.app(app)
 
+        if not app:
+            raise Exception("App overriden with None. Please ensure that you return the app inside the app() function!")
+
     return cast(Starlette, app)
