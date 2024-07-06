@@ -53,7 +53,7 @@ def _process_page_module(page_mod: ModuleType):
 
     page_func = page_mod.page
     types = typing.get_type_hints(page_func)
-    if types.get("return") not in (liku.HTMLElement, Response):
+    if isinstance(types.get("return"), liku.HTMLElement | Response):
         raise Exception(
             f"{page_mod.__name__}.page() does not have correct return type."
             f"Expected HTMLElement | Response, got {types.get('return')}"
