@@ -13,7 +13,7 @@ from starlette.responses import HTMLResponse, Response
 from starlette.routing import Route
 
 from likulau.hooks import RequestContext
-from likulau.types import PageFunction, SSRFunction, StaticPathsFunction
+from likulau.types import LayoutFunction, PageFunction, SSRFunction, StaticPathsFunction
 from likulau.utils import run_async
 
 logger = logging.getLogger("likulau.routes")
@@ -25,6 +25,7 @@ class LikulauRoute[PropsType]:
     page_func: PageFunction[PropsType]
     static_paths_func: StaticPathsFunction | None = None
     ssr_props_func: SSRFunction[PropsType] | None = None
+    layout_func: LayoutFunction | None = None
 
     def create_router_func(self):
         return Route(self.path, create_route(self))
@@ -51,6 +52,10 @@ def _process_page_module(page_mod: ModuleType):
     if hasattr(page_mod, "get_static_paths"):
         static_paths_func = page_mod.get_static_paths
 
+    layout_func = None
+    if hasattr(page_mod, "layout"):
+        layout_func = page_mod.layout
+
     page_func = page_mod.page
     types = typing.get_type_hints(page_func)
     if isinstance(types.get("return"), liku.HTMLElement | Response):
@@ -65,7 +70,7 @@ def _process_page_module(page_mod: ModuleType):
             f"({types.get('props')} != {props_type})",
         )
 
-    return page_func, static_paths_func, ssr_props_func
+    return page_func, static_paths_func, ssr_props_func, layout_func
 
 
 def discover_pages():
@@ -101,6 +106,8 @@ def create_route(route: LikulauRoute):
                 response = await run_async(route.page_func)  # type: ignore
 
         if isinstance(response, liku.HTMLElement):
+            if route.layout_func:
+                response = await run_async(route.layout_func, response)
             response = HTMLResponse(str(response))
 
         return response
