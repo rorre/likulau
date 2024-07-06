@@ -28,9 +28,9 @@ def create_app():
         ],
         exception_handlers=exception_handlers,
     )
-    if Path("src/pages/_app.py").exists():
+    if Path("src/app.py").exists():
         logger.info("Found custom app file, running")
-        custom_app = importlib.import_module("src.pages._app")
+        custom_app = importlib.import_module("src.app")
         app: Starlette = custom_app.app(app)
 
     return app
