@@ -3,6 +3,8 @@ import logging
 from pathlib import Path
 
 from starlette.applications import Starlette
+from starlette.routing import Mount
+from starlette.staticfiles import StaticFiles
 
 from likulau.env import env
 from likulau.errors import discover_error_handlers
@@ -20,7 +22,10 @@ def create_app():
 
     app = Starlette(
         env("DEBUG", cast=bool, default=False),
-        routes=list(map(lambda x: x.create_router_func(), routes)),
+        routes=[
+            *list(map(lambda x: x.create_router_func(), routes)),
+            Mount("/static", app=StaticFiles(directory="static"), name="static"),
+        ],
         exception_handlers=exception_handlers,
     )
     if Path("src/pages/_app.py").exists():
