@@ -27,9 +27,10 @@ class LikulauRoute[PropsType]:
     static_paths_func: StaticPathsFunction | None = None
     ssr_props_func: SSRFunction[PropsType] | None = None
     layout_func: LayoutFunction | None = None
+    methods: list[str] | None = None
 
     def create_router_func(self):
-        return Route(self.path, create_route(self))
+        return Route(self.path, create_route(self), methods=self.methods)
 
 
 def _sort_route(route: LikulauRoute):
@@ -71,7 +72,11 @@ def _process_page_module(page_mod: ModuleType):
             f"({types.get('props')} != {props_type})",
         )
 
-    return page_func, static_paths_func, ssr_props_func, layout_func
+    methods = None
+    if hasattr(page_func, "_methods"):
+        methods = page_func._methods
+
+    return page_func, static_paths_func, ssr_props_func, layout_func, methods
 
 
 def discover_pages():
@@ -113,5 +118,13 @@ def create_route(route: LikulauRoute):
                     response = HTMLResponse(str(response))
 
         return response
+
+    return inner
+
+
+def methods(methods: list[str]):
+    def inner(func: PageFunction):
+        func._methods = methods
+        return func
 
     return inner
