@@ -107,10 +107,10 @@ def create_route(route: LikulauRoute):
                 else:
                     response = await run_async(route.page_func)  # type: ignore
 
-        if isinstance(response, liku.HTMLElement):
-            if route.layout_func:
-                response = await run_async(route.layout_func, response)
-            response = HTMLResponse(str(response))
+                if isinstance(response, liku.HTMLElement):
+                    if route.layout_func:
+                        response = await run_async(route.layout_func, response)
+                    response = HTMLResponse(str(response))
 
         return response
 
