@@ -1,5 +1,6 @@
+import os
 import logging
-from typing import Annotated
+from typing import Annotated, Union
 
 import typer
 import uvicorn
@@ -15,7 +16,7 @@ def run(
         typer.Option(help="The host to serve on."),
     ] = "127.0.0.1",
     port: Annotated[
-        int,
+        Union[int, None],
         typer.Option(help="The port to serve on."),
     ] = 8000,
     reload: Annotated[
@@ -34,7 +35,16 @@ def run(
             help="Enable/Disable X-Forwarded-Proto, X-Forwarded-For, X-Forwarded-Port to populate remote address info."
         ),
     ] = True,
+    workers: Annotated[
+        Union[int, None],
+        typer.Option(
+            help="Use multiple worker processes. Cannot be used with --reload flag."
+        ),
+    ] = None,
 ):
+    if not port:
+        port = int(os.getenv("PORT", "8000"))
+
     uvicorn.run(
         "likulau.app:create_app",
         host=host,
@@ -45,6 +55,7 @@ def run(
         proxy_headers=proxy_headers,
         factory=True,
         lifespan="on",
+        workers=workers,
     )
 
 
