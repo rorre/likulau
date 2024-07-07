@@ -57,6 +57,12 @@ def _process_page_module(page_mod: ModuleType):
     layout_func = None
     if hasattr(page_mod, "layout"):
         layout_func = page_mod.layout
+        layout_props_type = typing.get_type_hints(layout_func).get("props")
+        if layout_props_type != props_type:
+            raise Exception(
+                "Props type returned from get_ssr_props() does not match layout(). "
+                f"({layout_props_type} != {props_type})",
+            )
 
     page_func = page_mod.page
     types = typing.get_type_hints(page_func)
@@ -114,7 +120,7 @@ def create_route(route: LikulauRoute):
 
                 if isinstance(response, liku.HTMLElement):
                     if route.layout_func:
-                        response = await run_async(route.layout_func, response)
+                        response = await run_async(route.layout_func, props, response)
                     response = HTMLResponse(str(response))
 
         return response
