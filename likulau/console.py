@@ -18,7 +18,7 @@ def run(
     port: Annotated[
         Union[int, None],
         typer.Option(help="The port to serve on."),
-    ] = 8000,
+    ] = None,
     reload: Annotated[
         bool,
         typer.Option(help="Enable auto-reload of the server when files change."),
