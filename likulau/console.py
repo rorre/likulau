@@ -80,6 +80,7 @@ def dev(
         proxy_headers=proxy_headers,
         factory=True,
         lifespan="on",
+        reload=True,
     )
 
 
