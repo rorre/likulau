@@ -21,7 +21,7 @@ def run(
     reload: Annotated[
         bool,
         typer.Option(help="Enable auto-reload of the server when files change."),
-    ] = True,
+    ] = False,
     root_path: Annotated[
         str,
         typer.Option(
