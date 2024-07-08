@@ -1,0 +1,139 @@
+---
+title: Routing
+description: Learn how to manipulate routes
+---
+
+import { Aside, FileTree } from '@astrojs/starlight/components';
+
+Unlike many of Python web frameworks out there, Likulau uses file-based routing.
+This means that the path of your application will be determined based on where
+you put the files.
+
+## Pages
+
+All of your pages resides in `src/pages` directory. All the file and directory names
+dictates where the path would be executed. An exception would be `index.py`,
+which will be replaced with `/` for that directory. Let's take a look at an example:
+
+<FileTree>
+
+- src
+  - pages
+    - index.py this will be /
+    - example
+      - index.py this will be /example
+      - hello.py this will be /example/hello
+
+</FileTree>
+
+## Response
+
+Inside your page files, you are required to have a function called `page()`. This function
+may or may not be async, depending on your choice. This function **must** returns either a
+`liku.HTMLElement` or Starlette's `Response` instance.
+
+<Aside>
+
+In Likulau, you are forced to import explicitly from Starlette for all Response objects.
+This is different with FastAPI, where FastAPI re-exports all of Starlette's classes.
+
+</Aside>
+
+### HTML Response
+
+This is the primary use case and why Likulau exists, the framework integrates with Liku directly.
+Therefore, you are able to express your HTML in Python and have type safety right away.
+
+```py
+# src/pages/index.py
+import asyncio
+import liku as e
+
+async def page():
+    await asyncio.sleep(2) # Simulate heavy work
+    return e.body(
+        children=[
+            e.h1(children="Hello world!"),
+            e.p(children="I'm from Likulau!")
+        ]
+    )
+```
+
+You may learn more about Liku [here](https://rorre.github.io/liku/). You may also use Jinja2
+templates and use Starlette's `TemplateResponse` by following [this guide](https://www.starlette.io/templates/).
+
+### API Response
+
+Of course, not every page will return HTML, maybe you want an endpoint for a REST API, or a simple
+`fetch()` request instead of using forms. Likulau allows this by making you return
+the `page()` function a Starlette `Response` object.
+
+```py
+# src/pages/api/posts.py
+from starlette.responses import JSONResponse
+
+async def page():
+    posts = await fetch_posts()
+    return JSONResponse(posts)
+
+```
+
+This will work just fine! Likulau will simply forward it right away to Starlette, and do
+no magic.
+
+## Request Object
+
+The request object in Likulau is available as a hook. It is available by invoking the
+`use_request()` function anywhere during a page request. This will return a Starlette
+`Request` instance related to current request, you can find information about it
+[here](https://www.starlette.io/requests/).
+
+```py
+# src/pages/greet.py
+from likulau.hooks import use_request
+import liku as e
+
+async def page():
+    req = use_request()
+    return e.p(children=f"Hello, {request.client.host}!")
+```
+
+## Route Parameters
+
+A routing system is incomplete without being able to take in parameters. In Likulau,
+you are able to define route parameters using the `[param]` syntax in the directory or file
+name.
+
+<FileTree>
+
+- src
+  - pages
+    - index.py this will be /
+    - [post_id]
+      - index.py this will be /[post_id]
+      - [comment_id].py this will be /[post_id]/[comment_id]
+      - comment.py this will be /[post_id]/comment
+
+</FileTree>
+
+You are then able to access the data from `request.path_params` attribute.
+
+```py
+# src/pages/[post_id]/index.py
+import liku as e
+from likulau.hooks import use_request
+
+def page():
+    req = use_request()
+    post = fetch_post(req.path_param["post_id"])
+    post_html = render_markdown(post.content)
+
+    return e.div(
+        children=[
+          e.h1(children=post.title),
+          # Only use safe if you're sure!
+          e.div(children=post_html, safe=True)
+        ]
+    )
+
+```

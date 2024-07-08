@@ -1,0 +1,56 @@
+---
+title: Getting Started
+description: How to get started with Likulau
+sidebar:
+    order: 1
+---
+
+import { Aside, FileTree } from '@astrojs/starlight/components';
+
+Let's get you started quickly by setting up a Likulau project!
+
+## Requirements
+
+- **Python 3.12+**. Older versions are and will not be supported
+- IDE. Visual Studio Code with official Python extension works
+- Terminal. You will need this to run the server
+
+## Template
+
+<Aside>
+This section is WIP, there is no template to get started quickly yet. Please proceed with manual installation.
+</Aside>
+
+## Manual Setup
+
+You will need to install Likulau first:
+
+```bash
+$ pip install git+https://github.com/rorre/likulau.git
+```
+
+### Your First Page
+
+Likulau makes use of file-based routing. All your pages will be inside the `src/pages` directory.
+Now, let's try to make a new file called `src/pages/index.py`:
+
+```py
+# src/pages/index.py
+import liku as e
+
+def page():
+    return e.p(children="Hello world!")
+
+```
+
+Next, try to run the server now!
+
+```bash
+$ likulau dev
+INFO:     Started server process [14884]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+```
+
+Open your browser, and go to the link provided. It should show your hello world message!
