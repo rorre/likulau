@@ -2,6 +2,7 @@ import importlib
 import inspect
 import logging
 import re
+import sys
 import typing
 from dataclasses import dataclass
 from pathlib import Path
@@ -17,6 +18,7 @@ from likulau.providers import provide_all
 from likulau.types import LayoutFunction, PageFunction, SSRFunction, StaticPathsFunction
 from likulau.utils import run_async
 
+sys.path.append(".")
 logger = logging.getLogger("likulau.routes")
 
 
