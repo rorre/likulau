@@ -26,7 +26,12 @@ def discover_error_handlers():
             )
 
         types = typing.get_type_hints(page_mod.handler)
-        if types.get("return") not in (liku.HTMLElement, Response):
+        # TODO: Is there any way for us to check the distribution better?
+        if types.get("return") not in (
+            liku.HTMLElement,
+            Response,
+            liku.HTMLElement | Response,
+        ):
             raise Exception(
                 f"{page_mod.__name__}.page() does not have correct return type."
                 f"Expected HTMLElement | Response, got {types.get('return')}"
