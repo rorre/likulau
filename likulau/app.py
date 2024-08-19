@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import cast
 
 from starlette.applications import Starlette
-from starlette.routing import Mount
+from starlette.routing import Mount, BaseRoute
 from starlette.staticfiles import StaticFiles
 
 from likulau.env import env
@@ -30,12 +30,15 @@ def create_app():
         if hasattr(custom_app, "lifespan"):
             lifespan = custom_app.lifespan
 
+    app_routes: list[BaseRoute] = list(map(lambda x: x.create_router_func(), routes))
+    if Path("static").exists() and Path("static").is_dir():
+        app_routes.append(
+            Mount("/static", app=StaticFiles(directory="static"), name="static")
+        )
+
     app = Starlette(
         env("DEBUG", cast=bool, default=False),
-        routes=[
-            *list(map(lambda x: x.create_router_func(), routes)),
-            Mount("/static", app=StaticFiles(directory="static"), name="static"),
-        ],
+        routes=app_routes,
         exception_handlers=exception_handlers,
         lifespan=lifespan,
     )
