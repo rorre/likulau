@@ -10,7 +10,7 @@ from starlette.responses import HTMLResponse, Response
 
 from likulau.hooks import ExceptionContext, RequestContext
 from likulau.types import ErrorHandlerFunction
-from likulau.utils import run_async
+from likulau._internal.utils import run_async
 
 
 def discover_error_handlers():
@@ -21,7 +21,9 @@ def discover_error_handlers():
 
         page_mod = importlib.import_module(module)
         if not hasattr(page_mod, "handler"):
-            raise Exception(f"Cannot find handler function for exception handler {page_mod.__name__}")
+            raise Exception(
+                f"Cannot find handler function for exception handler {page_mod.__name__}"
+            )
 
         types = typing.get_type_hints(page_mod.handler)
         if types.get("return") not in (liku.HTMLElement, Response):
