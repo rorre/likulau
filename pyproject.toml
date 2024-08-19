@@ -7,7 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-liku = {git = "https://github.com/rorre/liku.git", rev = "main"}
+liku = {git = "https://github.com/rorre/liku.git", rev = "main", extras = ["htm"]}
 starlette = "^0.37.2"
 uvicorn = "^0.30.1"
 asyncer = "^0.0.7"

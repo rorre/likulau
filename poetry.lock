@@ -83,7 +83,7 @@ files = [
 
 [[package]]
 name = "liku"
-version = "0.1.1"
+version = "0.1.4"
 description = "Render HTML inspired by modern web development."
 optional = false
 python-versions = "^3.12"
@@ -91,13 +91,16 @@ files = []
 develop = false
 
 [package.dependencies]
-lxml = "^5.3.0"
+lxml = {version = "^5.3.0", optional = true}
+
+[package.extras]
+htm = ["lxml (>=5.3.0,<6.0.0)"]
 
 [package.source]
 type = "git"
 url = "https://github.com/rorre/liku.git"
 reference = "main"
-resolved_reference = "b67431b0d0677e149ad1a93454d8e9492b79c0e8"
+resolved_reference = "e073fb48aa55c90579015b648214ceebf2d0479c"
 
 [[package]]
 name = "lxml"
@@ -361,13 +364,13 @@ full = ["httpx (>=0.22.0)", "itsdangerous", "jinja2", "python-multipart (>=0.0.7
 
 [[package]]
 name = "typer"
-version = "0.12.3"
+version = "0.12.4"
 description = "Typer, build great CLIs. Easy to code. Based on Python type hints."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "typer-0.12.3-py3-none-any.whl", hash = "sha256:070d7ca53f785acbccba8e7d28b08dcd88f79f1fbda035ade0aecec71ca5c914"},
-    {file = "typer-0.12.3.tar.gz", hash = "sha256:49e73131481d804288ef62598d97a1ceef3058905aa536a1134f90891ba35482"},
+    {file = "typer-0.12.4-py3-none-any.whl", hash = "sha256:819aa03699f438397e876aa12b0d63766864ecba1b579092cc9fe35d886e34b6"},
+    {file = "typer-0.12.4.tar.gz", hash = "sha256:c9c1613ed6a166162705b3347b8d10b661ccc5d95692654d0fb628118f2c34e6"},
 ]
 
 [package.dependencies]
@@ -408,4 +411,4 @@ standard = ["colorama (>=0.4)", "httptools (>=0.5.0)", "python-dotenv (>=0.13)",
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "0d9dd8e56f10b9c4b6b106f71bd3ba6615469ea3bc3563b98b899aa671549f70"
+content-hash = "8ce47ac718d784c70c6b48d58db39506bb3c3345507363ef5a5c3fe22a60eb99"
