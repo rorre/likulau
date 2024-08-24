@@ -160,7 +160,7 @@ resolved_reference = "e073fb48aa55c90579015b648214ceebf2d0479c"
 
 [[package]]
 name = "likulau"
-version = "0.1.0"
+version = "0.2.0"
 description = ""
 optional = false
 python-versions = "^3.12"
