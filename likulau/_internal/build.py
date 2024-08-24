@@ -41,6 +41,7 @@ async def build_app(target_directory: Path):
 
         console.print(f"[*] Building {route.path}")
         async for path, response in request_route(client, route, route_info):
+            orig_path = path
             path = path.lstrip("/").rstrip("/")
             target_file = target_directory.joinpath(path).resolve()
             if not target_file.is_relative_to(target_directory):
@@ -54,6 +55,6 @@ async def build_app(target_directory: Path):
             with open(target_file, "wb") as fwrite:
                 fwrite.write(response.content)
 
-            console.print(f"    [green][*] Page {path} built to {target_file}")
+            console.print(f"    [green][*] Page {orig_path} built to {target_file}")
 
     console.print("[green][*] Finished!")
