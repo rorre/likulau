@@ -1,9 +1,14 @@
+import asyncio
 import os
 import logging
+from pathlib import Path
+import shutil
 from typing import Annotated, Union
 
 import typer
 import uvicorn
+
+from likulau._internal.build import build_app
 
 logger = logging.getLogger("likulau.console")
 app = typer.Typer()
@@ -37,9 +42,7 @@ def run(
     ] = True,
     workers: Annotated[
         Union[int, None],
-        typer.Option(
-            help="Use multiple worker processes. Cannot be used with --reload flag."
-        ),
+        typer.Option(help="Use multiple worker processes. Cannot be used with --reload flag."),
     ] = None,
 ):
     if not port:
@@ -96,9 +99,26 @@ def dev(
 
 
 @app.command()
-def build():
-    raise NotImplementedError()
+def build(
+    target: Annotated[str, typer.Option(help="Target directory of the build result")] = "dist",
+    force: Annotated[bool, typer.Option(help="Force regardless if target directory already exists")] = False,
+):
+    dist_directory = Path(target).resolve()
+    if dist_directory.exists():
+        if not force:
+            yn = typer.confirm("Target directory already exists, are you sure you want to continue?", default=False)
+            if not yn:
+                return
+
+        shutil.rmtree(dist_directory)
+
+    dist_directory.mkdir()
+    asyncio.run(build_app(dist_directory))
+
+
+def run_cli():
+    app()
 
 
 if __name__ == "__main__":
-    app()
+    run_cli()

@@ -32,7 +32,9 @@ class LikulauRoute[PropsType]:
     methods: list[str] | None = None
 
     def create_router_func(self):
-        return Route(self.path, create_route(self), methods=self.methods)
+        route = Route(self.path, create_route(self), methods=self.methods)
+        route._likulau_route_info = self # type: ignore (intended for app builder)
+        return route
 
 
 def _sort_route(route: LikulauRoute):

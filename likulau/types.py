@@ -11,7 +11,7 @@ type PageFunction[PropsType] = t.Callable[[PropsType], MaybeAwaitable[PageReturn
     [], MaybeAwaitable[PageReturn]
 ]
 type SSRFunction[PropsType] = t.Callable[[Request], MaybeAwaitable[PropsType]]
-type StaticPathsFunction = t.Callable[[], MaybeAwaitable[dict[str, t.Any]]]
+type StaticPathsFunction = t.Callable[[], MaybeAwaitable[list[dict[str, t.Any]]]]
 type ErrorHandlerFunction = t.Callable[[], MaybeAwaitable[PageReturn]]
 type LayoutFunction[PropsType] = t.Callable[[PropsType, liku.HTMLElement], MaybeAwaitable[PageReturn]]
 type ProviderFunction = t.Callable[[], MaybeAwaitable[t.ContextManager | t.AsyncContextManager]]

@@ -12,12 +12,12 @@ starlette = "^0.37.2"
 uvicorn = "^0.30.1"
 asyncer = "^0.0.7"
 typer = "^0.12.3"
+rich = "^13.7.1"
+httpx = "^0.27.0"
 
 [tool.poetry.scripts]
-likulau = 'likulau.console:run'
+likulau = 'likulau.console:run_cli'
 
-[tool.poetry.group.dev.dependencies]
-rich = "^13.7.1"
 
 [build-system]
 requires = ["poetry-core"]
