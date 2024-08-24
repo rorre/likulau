@@ -11,6 +11,14 @@ class UsernameProps:
     info: str
 
 
+def get_static_paths():
+    return [
+        {"username": "ren"},
+        {"username": "example"},
+        {"username": "epicgamer"},
+    ]
+
+
 def page(props: UsernameProps) -> e.HTMLElement:
     request = use_request()
     return e.p(children=f"Hello {request.path_params['username']}! ({props.info})")
