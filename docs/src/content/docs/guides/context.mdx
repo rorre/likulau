@@ -1,0 +1,98 @@
+---
+title: Context
+description: Share state deeply using context
+---
+import { Image } from 'astro:assets';
+import propDrillImage from "../../../assets/context/propdrilling.png"
+import contextImage from "../../../assets/context/context.png"
+
+Often times, you need to pass a state or information to a child component. Usually, you do this by
+leveraging props. However, imagine the case where you need to pass a state to a deeply nested
+component, down in the DOM tree. You will need to pass the props from top all the way to the bottom,
+this is what we call "prop drilling". See the image above for an example of prop drilling.
+
+<Image src={propDrillImage} alt="App Component sending data through props to Great Grandchild Component 2" />
+
+## Context
+
+To solve this problem, Liku provides Context so all data can be consumed to all child components without
+the need of sending it through props. It works much like dependency injection, once the parent has provided
+the data to the context, all the child is able to receive the data by asking through the key.
+
+<Image src={contextImage} alt="App Component sending data through context to Great Grandchild Component 2" />
+
+Let's take a look at how we can make our context!
+
+```py {"1. Create our context object":11-12} {"2. Provide the data to the context using with() statement":15-16} {"3. Use the use_context() hook to receive the data from the provider":24-25}
+from dataclasses import dataclass
+from liku.htm import html
+from liku.context import Context, use_context
+
+@dataclass
+class User:
+    name: str
+    age: int
+    role: str
+
+
+UserContext = Context("user")
+
+def Index():
+
+    with UserContext.provide(User(name="Ren", age=20, role="admin")):
+        return html("""
+            <main>
+                <Profile />
+            </main>
+        """)
+
+def Profile():
+
+    user = use_context(UserContext)
+    return html("""
+        <div class="flex flex-col gap-2">
+            <p>{{ str(user.age) }}</p>
+            <p>{{ user.role }}</p>
+            <p>{{ user.name }}</p>
+        </div>
+    """)
+
+
+print(Index())
+```
+
+As you can see, it is really simple! Simply ensure the parent provides the value, and the child
+can get and inject the value any time!
+
+## Built-in Contexts
+
+Likulau provides two built-in context for ease:
+
+- `RequestContext`: Context for current request. Available at any lifecycle, accessible via `use_request()`
+- `ExceptionContext`: Context for thrown exception from a view. Available in error handlers, accessible via `use_exception()`
+
+## App Level Context Provider
+
+Providing app level context can be annoying, especially if another context depends on the availability of other context.
+To aid this, Likulau provides a way to standardize all providers. To do so, create a file at `src/providers` and
+fill in all the metadata.
+
+```py title="src/providers/example.py"
+from liku.context import Context
+from likulau.providers import provider
+from src.providers.another import AnotherContext
+
+SampleContext = Context('sample')
+
+@provider(SampleContext, deps=[AnotherContext])
+def provide_sample():
+    # Setup here...
+
+    with SampleContext.provide("example data"):
+        yield
+    
+    # Cleanup here...
+```
+
+Likulau will manage all the context and its dependencies and determine which context should be activated first.
+
