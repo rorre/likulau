@@ -4,9 +4,11 @@ from pathlib import Path
 from typing import cast
 
 from starlette.applications import Starlette
+from starlette.middleware import Middleware
 from starlette.routing import Mount, BaseRoute
 from starlette.staticfiles import StaticFiles
 
+from likulau._internal.form_rpc import FormRPCMiddleware
 from likulau.env import env
 from likulau._internal.errors import discover_error_handlers
 from likulau._internal.providers import setup_providers
@@ -41,6 +43,7 @@ def create_app():
         routes=app_routes,
         exception_handlers=exception_handlers,
         lifespan=lifespan,
+        middleware=[Middleware(FormRPCMiddleware)],
     )
 
     if Path("src/app.py").exists():
