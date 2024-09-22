@@ -2,4 +2,51 @@
 title: Error Handling
 ---
 
-TODO
+import { Aside } from '@astrojs/starlight/components';
+
+Likulau provides an easy way to handle errors during execution, allowing you to simply
+install a status code handler for you to manage the response.
+
+## Error Pages
+
+Likulau will look into your `src/errors/` directory, and find all `<statuscode>.py` file
+to register as an error handler. For example, if you want to have a custom 404 page, create
+a `src/errors/404.py` file with a function called `handler()`:
+
+```py
+import liku as e
+
+
+def handler() -> e.HTMLElement:
+    return e.div(children=e.h1(children="Not Found"))
+```
+
+During execution of the handler function, it is injected with `RequestContext` and `ExceptionContext`,
+therefore you can get the request and exception object by calling `use_request()` and `use_exception()`
+respectively.
+
+## Throwing Error Pages
+
+Sometimes, you need to let likulau know that there is an error, and you want the error handler
+to fire. You can do so by throwing a starlette `HTTPException(status_code, detail=None, headers=None)` error.
+To inspect the data, you can use `use_exception()` inside the error handler. For example, take a look at the
+following page route handler:
+
+```py
+from starlette.exceptions import HTTPException
+
+def page():
+    raise HTTPException(400, detail="No")
+
+```
+
+Upon visiting the page, it will raise a HTTPException error, and the 400 error handler will run.
+
+<Aside>
+You can a class with inherit HTTPException, and it will be handled accordingly as well.
+</Aside>
+
+### Non-HTTPException errors
+
+All exception that does not inherit HTTPException will be marked as an 500 Internal Server Error. However,
+the 500 error handler will still run.
